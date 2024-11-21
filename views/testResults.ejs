@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Results</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col items-center py-10">
+    <div class="max-w-4xl w-full bg-white rounded-lg shadow-lg p-8">
+        <h1 class="text-3xl font-bold text-gray-800 text-center mb-6">Your Test Results</h1>
+
+
+        <p class="text-center text-red-500">
+            <%= message %>
+        </p>
+
+        <% if (results && results.length> 0) { %>
+            <table class="min-w-full table-auto">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 border">Test Name</th>
+                        <th class="px-4 py-2 border">Score</th>
+                        <th class="px-4 py-2 border">Date Taken</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% results.forEach(result=> { %>
+                        <tr>
+                            <td class="px-4 py-2 border">
+                                <%= result.testName %>
+                            </td>
+                            <td class="px-4 py-2 border">
+                                <%= result.score %>
+                            </td>
+                            <td class="px-4 py-2 border">
+                                <%= new Date(result.dateTaken).toLocaleDateString() %>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+            <% } else { %>
+                <p>No results available.</p>
+                <% } %>
+    </div>
+</body>
+
+</html>

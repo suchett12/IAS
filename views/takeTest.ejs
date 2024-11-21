@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .time-tracker {
+            font-size: 16px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .question-section {
+            margin-bottom: 30px;
+        }
+
+        .locked {
+            background-color: #f8d7da;
+            pointer-events: none;
+        }
+
+        .question-status {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .remaining-time {
+            font-size: 18px;
+            color: #ff6347;
+            font-weight: bold;
+        }
+
+        .difficulty-level {
+            font-size: 14px;
+            font-weight: normal;
+            color: #4b5563;
+        }
+
+        .adaptive-questioning {
+            font-size: 16px;
+            font-weight: bold;
+            color: #16a085;
+        }
+
+        .question-stats {
+            font-size: 14px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col items-center py-10">
+    <div class="max-w-4xl w-full bg-white rounded-lg shadow-lg p-8">
+        <h1 class="text-3xl font-bold text-gray-800 text-center mb-6">Take Test: <%= test.name %>
+        </h1>
+
+        <p class="time-tracker" id="timeSpent">Time spent: 0s</p>
+        <p class="remaining-time" id="remainingTime">Remaining: <%= test.timeLimit %>s</p>
+
+        <% test.questions.forEach((question, index)=> { %>
+            <div id="question-<%= index %>" class="question-section p-4 border rounded-lg bg-gray-50"
+                data-section="<%= question.section %>" data-difficulty="<%= question.difficulty %>">
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">Q<%= index + 1 %>: <%= question.questionText %>
+                </h3>
+
+                <% question.options.forEach((option, i)=> { %>
+                    <label class="block">
+                        <input type="radio" name="question<%= index %>" value="<%= option %>"
+                            onchange="handleAnswerChange(<%= index %>, this.value)">
+                        <%= option %>
+                    </label>
+                    <% }) %>
+
+                        <p class="question-status">Not Answered</p>
+                        <p class="difficulty-level">Difficulty: <%= question.difficulty %>
+                        </p>
+
+                        <div class="question-stats">
+                            Time spent: 0s
+                        </div>
+            </div>
+            <% }) %>
+
+                <div class="mt-6">
+                    <button type="button" onclick="submitTest()"
+                        class="block text-center bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600">
+                        Submit Test
+                    </button>
+                </div>
+    </div>
+
+    <script>
+        let startTime = <%= startTime %>;
+        let timeSpent = 0; // Total time spent on the test
+        let questionTime = []; // Time spent per question
+        let questionChanges = {}; // Track how many times a question is changed
+        let selectedAnswers = []; // Track answers to each question
+        let answerStatus = new Array(<%= test.questions.length %>).fill(false); // Track answered questions
+        let sectionPerformance = {}; // Track performance in sections
+        let difficultyLevels = []; // Track difficulty levels
+
+        // Function to update time spent on the test
+        function updateTime() {
+            timeSpent = Math.floor((Date.now() - startTime) / 1000); // Time in seconds
+            document.getElementById('timeSpent').innerText = `Time spent: ${timeSpent}s`;
+            let remainingTime = 6000 - timeSpent;
+            document.getElementById('remainingTime').innerText = `Remaining: ${remainingTime}s`;
+
+            if (remainingTime <= 0) {
+                alert("Time's up!");
+                submitTest(); // Auto-submit when time is up
+            }
+        }
+
+        // Function to handle answer change and track changes
+        function handleAnswerChange(questionIndex, selectedAnswer) {
+            if (!questionChanges[questionIndex]) {
+                questionChanges[questionIndex] = { changes: 0, time: Date.now() };
+            } else {
+                questionChanges[questionIndex].changes++;
+                questionChanges[questionIndex].time = Date.now();
+            }
+
+            selectedAnswers[questionIndex] = selectedAnswer;
+            answerStatus[questionIndex] = true; // Mark the question as answered
+            sectionPerformance[selectedAnswer.section] = sectionPerformance[selectedAnswer.section] || 0;
+            sectionPerformance[selectedAnswer.section]++;
+
+            updateQuestionStatus(questionIndex);
+        }
+
+        // Function to update question status
+        function updateQuestionStatus(index) {
+            const questionDiv = document.querySelector(`#question-${index}`);
+            const statusLabel = questionDiv.querySelector('.question-status');
+
+            if (answerStatus[index]) {
+                statusLabel.innerText = `Answered (Changed ${questionChanges[index].changes} times at ${new Date(questionChanges[index].time).toLocaleTimeString()})`;
+                questionDiv.classList.remove('locked');
+            } else {
+                statusLabel.innerText = `Not Answered`;
+            }
+        }
+
+        // Function to track difficulty levels
+        function trackDifficultyLevel(questionIndex, difficulty) {
+            difficultyLevels[questionIndex] = difficulty;
+        }
+
+        // Function to submit the test
+        function submitTest() {
+            const answers = selectedAnswers;
+            const timeSpentOnEachQuestion = questionTime;
+            const sectionPerformanceData = sectionPerformance;
+
+            document.querySelectorAll('.question').forEach((question, index) => {
+                const section = question.dataset.section;
+                sectionPerformance[section] = sectionPerformance[section] || 0;
+                sectionPerformance[section]++;
+            });
+
+            fetch(`/test/<%= test._id %>/submit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user: "<%= user._id %>", // User ID from session (e.g., user._id should be available in template engine)
+                    test: "<%= test._id %>", // Test ID (e.g., test._id should be available in template engine)
+                    answers,
+                    timeSpent,
+                    switches: Object.values(questionChanges).reduce((acc, val) => acc + val.changes, 0), // Calculate total switches
+                    sectionPerformance: sectionPerformanceData,
+                    difficulty: difficultyLevels,
+                    timePerQuestion: timeSpentOnEachQuestion
+                })
+            }).then(response => {
+                window.location.href = `/test/results`;
+            });
+        }
+
+        // Function to track time per question
+        function trackTimePerQuestion(questionIndex) {
+            questionTime[questionIndex] = Math.floor((Date.now() - questionChanges[questionIndex].time) / 1000);
+            document.querySelector(`#question-${questionIndex} .question-stats`).innerText = `Time spent: ${questionTime[questionIndex]}s`;
+        }
+
+        setInterval(updateTime, 1000); // Update time every second
+    </script>
+</body>
+
+</html>

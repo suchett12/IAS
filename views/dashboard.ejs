@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col items-center py-10">
+    <div class="max-w-4xl w-full bg-white rounded-lg shadow-lg p-8">
+        <h1 class="text-3xl font-bold text-gray-800 text-center mb-4">Welcome, <%= user.name %>!</h1>
+        <p class="text-lg text-gray-600 text-center mb-6">Your Role: <span class="font-semibold capitalize">
+                <%= user.role %>
+            </span></p>
+
+        <!-- Admin Section -->
+        <% if (user.role==='admin' ) { %>
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Admin Actions</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <a href="/test/create"
+                        class="block text-center bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600">
+                        ➕ Create a New Test
+                    </a>
+                    <a href="/test/manage"
+                        class="block text-center bg-green-500 text-white py-3 rounded-lg hover:bg-green-600">
+                        🛠 Manage Tests
+                    </a>
+                </div>
+            </div>
+            <% } %>
+
+                <!-- Student Section -->
+                <% if (user.role==='student' ) { %>
+                    <div class="mb-8">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">Available Tests</h2>
+                        <p class="text-gray-600 mb-2">Explore and take tests available for you:</p>
+                        <a href="/test/available"
+                            class="block text-center bg-indigo-500 text-white py-3 rounded-lg hover:bg-indigo-600">
+                            📄 View Available Tests
+                        </a>
+                    </div>
+
+                    <div class="mb-8">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-4">Your Test Results</h2>
+                        <p class="text-gray-600 mb-2">View your previous test results:</p>
+                        <a href="/test/results"
+                            class="block text-center bg-yellow-500 text-white py-3 rounded-lg hover:bg-yellow-600">
+                            📊 View Test Results
+                        </a>
+                    </div>
+                    <% } %>
+
+                        <!-- Shared Actions -->
+                        <div class="mt-6">
+                            <a href="/user/logout"
+                                class="block text-center bg-red-500 text-white py-3 rounded-lg hover:bg-red-600">
+                                🚪 Logout
+                            </a>
+                        </div>
+    </div>
+
+    <script>
+        // Set the current year dynamically
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+
+</html>

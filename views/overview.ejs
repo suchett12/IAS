@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IAS Test Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 font-sans text-gray-800">
+
+    <!-- Header Section -->
+    <header class="bg-blue-600 text-white py-4">
+        <div class="container mx-auto text-center">
+            <h1 class="text-4xl font-bold">IAS Test Portal</h1>
+            <p class="text-xl mt-2">Prepare and Assess Yourself for the IAS Exam</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-8 h-screen">
+
+        <!-- Card Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-2xl font-semibold text-blue-600 mb-4">Create a New Test</h2>
+                    <p class="text-gray-600 mb-6">Create and customize your own tests for IAS preparation.</p>
+                    <a href="/test/create"
+                        class="block text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300">Create
+                        a
+                        Test</a>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-2xl font-semibold text-blue-600 mb-4">Login to Take a Test</h2>
+                    <p class="text-gray-600 mb-6">Already have an account? Login to take tests and track your progress.
+                    </p>
+                    <a href="/user/login"
+                        class="block text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300">Login</a>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-2xl font-semibold text-blue-600 mb-4">Register as New User</h2>
+                    <p class="text-gray-600 mb-6">New to the portal? Register and start taking tests to assess your
+                        knowledge.</p>
+                    <a href="/user/register"
+                        class="block text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300">Register</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-blue-600 text-white py-4 mt-8">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 IAS Test Portal. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>
